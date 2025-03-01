@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disenchant Values</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+      cursor: pointer;
+    }
+
+    td {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Disenchant Value List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th data-sort="name">Name</th>
+        <th data-sort="level">Level</th>
+        <th data-sort="minBid">Min Bid</th>
+        <th data-sort="buyout">Buyout</th>
+        <th data-sort="disenchantValue">Disenchant Value</th>
+        <th data-sort="profitBuyout">Profit (Buyout)</th>
+        <th data-sort="profitMinBid">Profit (Min Bid)</th>
+        <th data-sort="profitPercent">Profit (%)</th>
+      </tr>
+    </thead>
+    <tbody id="data-table"></tbody>
+  </table>
+
+  <script>
+    // Global storage for API data and current sort settings
+    let globalData = [];
+    let currentSort = {
+      column: null,
+      order: 'asc'
+    };
+
+    // Format copper into gold/silver/copper string
+    function formatCurrency(copper) {
+      if (copper === null || copper === undefined) return "-";
+      const gold = Math.floor(copper / 10000);
+      const silver = Math.floor((copper % 10000) / 100);
+      const copperLeft = Math.floor(copper % 100);
+      return `${gold}g ${silver}s ${copperLeft}c`;
+    }
+
+    // Render table rows from the data array
+    function renderTable(data) {
+      const tableBody = document.getElementById("data-table");
+      tableBody.innerHTML = "";
+      data.forEach(item => {
+        // Calculate profit percentage using buyout.
+        const profitPercent = item.minBuyoutRaw > 0 ?
+          ((item.profitVsBuyout / item.minBuyoutRaw) * 100).toFixed(2) :
+          "0.00";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.itemLevel}</td>
+          <td>${formatCurrency(item.minBidRaw)}</td>
+          <td>${formatCurrency(item.minBuyoutRaw)}</td>
+          <td>${formatCurrency(item.disenchantValueRaw)}</td>
+          <td style="color:${item.profitVsBuyout > 0 ? 'green' : 'red'}">${formatCurrency(item.profitVsBuyout)}</td>
+          <td style="color:${item.profitVsMinBid > 0 ? 'green' : 'red'}">${formatCurrency(item.profitVsMinBid)}</td>
+          <td>${profitPercent}%</td>
+        `;
+
+        // Clicking a cell copies its text to the clipboard.
+        row.querySelectorAll("td").forEach(cell => {
+          cell.addEventListener("click", () => {
+            navigator.clipboard.writeText(cell.textContent.trim())
+              .catch(err => console.error("Error copying text: ", err));
+          });
+        });
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Sorting function based on a key and order.
+    function sortData(key, order) {
+      globalData.sort((a, b) => {
+        let valueA, valueB;
+        switch (key) {
+          case "name":
+            valueA = a.name.toLowerCase();
+            valueB = b.name.toLowerCase();
+            break;
+          case "level":
+            valueA = a.itemLevel;
+            valueB = b.itemLevel;
+            break;
+          case "minBid":
+            valueA = a.minBidRaw;
+            valueB = b.minBidRaw;
+            break;
+          case "buyout":
+            valueA = a.minBuyoutRaw;
+            valueB = b.minBuyoutRaw;
+            break;
+          case "disenchantValue":
+            valueA = a.disenchantValueRaw;
+            valueB = b.disenchantValueRaw;
+            break;
+          case "profitBuyout":
+            valueA = a.profitVsBuyout;
+            valueB = b.profitVsBuyout;
+            break;
+          case "profitMinBid":
+            valueA = a.profitVsMinBid;
+            valueB = b.profitVsMinBid;
+            break;
+          case "profitPercent":
+            // Calculate profit percentage using buyout.
+            valueA = a.minBuyoutRaw > 0 ? (a.profitVsBuyout / a.minBuyoutRaw) * 100 : 0;
+            valueB = b.minBuyoutRaw > 0 ? (b.profitVsBuyout / b.minBuyoutRaw) * 100 : 0;
+            break;
+          default:
+            valueA = a[key];
+            valueB = b[key];
+        }
+
+        // Compare values for numeric or string sorting.
+        if (typeof valueA === 'string') {
+          return order === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+        } else {
+          return order === "asc" ? valueA - valueB : valueB - valueA;
+        }
+      });
+    }
+
+    // Attach event listeners to header cells for sorting.
+    document.querySelectorAll("th").forEach(header => {
+      header.addEventListener("click", () => {
+        const sortKey = header.getAttribute("data-sort");
+        if (!sortKey) return;
+
+        // Toggle sort order if clicking the same column.
+        if (currentSort.column === sortKey) {
+          currentSort.order = currentSort.order === "asc" ? "desc" : "asc";
+        } else {
+          currentSort.column = sortKey;
+          currentSort.order = "desc"; // default to descending (high-to-low)
+        }
+        sortData(sortKey, currentSort.order);
+        renderTable(globalData);
+      });
+    });
+
+    async function fetchData() {
+      try {
+        const response = await fetch("http://localhost:5189/api/disenchant");
+        const data = await response.json();
+        console.log("API Response:", data);
+        globalData = data;
+        renderTable(globalData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchData();
+  </script>
+
+</body>
+
+</html>
