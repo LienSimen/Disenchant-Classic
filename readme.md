@@ -78,7 +78,7 @@ The Disenchant query if you only needed that:
         SELECT
         i.id,
         i.name,
-        i.MinLevel AS item_level,   -- or i.ItemLevel if your schema differs
+        i.MinLevel AS item_level,
         la.min_bid,
         la.min_buyout,
         CASE
