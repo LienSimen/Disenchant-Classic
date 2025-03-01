@@ -23,6 +23,8 @@ DB_NAME=ahdb
 dotnet run
 ```
 
+Now listening on: http://localhost:5189
+
 ![Image](results.png)
 
 The Disenchant query if you only needed that:
