@@ -70,7 +70,7 @@ namespace WarDB.Controllers
                     SELECT
                     i.id,
                     i.name,
-                    i.MinLevel AS item_level,   -- or i.ItemLevel if your schema differs
+                    i.MinLevel AS item_level,
                     la.min_bid,
                     la.min_buyout,
                     CASE
@@ -87,28 +87,28 @@ namespace WarDB.Controllers
                         + (0.20 * 1.5 * mp.vision_dust)
                         + (0.05 * 1.0 *mp.large_glowing_shard)
                         
-                        -- Lower bracket: 36-40 ARMOR
+                        -- 36-40 ARMOR
                         WHEN i.ClassID = 4 AND i.MinLevel BETWEEN 36 AND 40 THEN
                             (0.75 * 3.5 * mp.vision_dust)
                           + (0.20 * 1.5 * mp.lesser_nether_essence)
                           + (0.05 * 1.0 * mp.small_radiant_shard)
                         
-                        -- Lower bracket: 36-40 WEAPONS
+                        -- 36-40 WEAPONS
                         WHEN i.ClassID = 2 AND i.MinLevel BETWEEN 36 AND 40 THEN
                             (0.75 * 1.5 * mp.lesser_nether_essence)
                           + (0.20 * 3.5 * mp.vision_dust)
                           + (0.05 * 1.0 * mp.small_radiant_shard)
 
-                        -- 41-45 WEAPON
-                        WHEN i.ClassID = 2 AND i.MinLevel BETWEEN 41 AND 45 THEN
-                            (0.75 * 1.5 * mp.greater_nether_essence)
-                        + (0.20 * 1.5 * mp.dream_dust)
-                        + (0.05 * 1.0 *mp.large_radiant_shard)
-                        
                         -- 41-45 ARMOR
                         WHEN i.ClassID = 4 AND i.MinLevel BETWEEN 41 AND 45 THEN
                             (0.75 * 1.5 * mp.dream_dust)
                         + (0.20 * 1.5 * mp.greater_nether_essence)
+                        + (0.05 * 1.0 *mp.large_radiant_shard)
+
+                        -- 41-45 WEAPON
+                        WHEN i.ClassID = 2 AND i.MinLevel BETWEEN 41 AND 45 THEN
+                            (0.75 * 1.5 * mp.greater_nether_essence)
+                        + (0.20 * 1.5 * mp.dream_dust)
                         + (0.05 * 1.0 *mp.large_radiant_shard)
 
                         -- 46-50 ARMOR
