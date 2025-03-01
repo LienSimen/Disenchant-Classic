@@ -23,18 +23,16 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); // ✅ Register Swagger
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Enable Swagger in development mode
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Enable static file serving for index.html
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
