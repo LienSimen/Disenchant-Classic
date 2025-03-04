@@ -1,0 +1,58 @@
+@model IEnumerable<WarDB.ViewModels.SearchResultViewModel>
+@using WarDB.ViewModels
+
+<h2>Search Results for "@ViewBag.Query"</h2>
+
+<form method="get" asp-controller="Home" asp-action="Index">
+  <input type="text" name="query" placeholder="Search items..." value="@ViewBag.Query" />
+  <select name="searchType">
+    <option value="approx" @(ViewBag.SearchType == "approx" ? "selected" : "")>Approximate</option>
+    <option value="precise" @(ViewBag.SearchType == "precise" ? "selected" : "")>Precise</option>
+  </select>
+  <button type="submit">Search</button>
+</form>
+
+@if (Model.Any())
+{
+  <table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Item Name</th>
+        <th>Vendor Price</th>
+        <th>Total Listings</th>
+        <th>Total Quantity</th>
+        <th>Min Bid</th>
+        <th>Max Bid</th>
+        <th>Avg Bid</th>
+        <th>Latest Min Buyout</th>
+        <th>Previous Min Buyout</th>
+        <th>Price Change</th>
+        <th>Recent Scan Time</th>
+        <th>Recent Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in Model)
+      {
+        <tr>
+          <td>@item.Name</td>
+          <td>@item.VendorPriceFormatted</td>
+          <td>@item.TotalListings</td>
+          <td>@item.TotalQuantity</td>
+          <td>@item.MinBid</td>
+          <td>@item.MaxBid</td>
+          <td>@item.AvgBid</td>
+          <td>@item.LatestMinBuyoutFormatted</td>
+          <td>@item.PreviousMinBuyoutFormatted</td>
+          <td>@item.PriceDifferenceFormatted</td>
+          <td>@item.RecentScanTime</td>
+          <td>@item.RecentPrice</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+else
+{
+  <p>No results found.</p>
+}

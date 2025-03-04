@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using WarDB.ViewModels;
 
 namespace WarDB.Models
 {
@@ -7,9 +9,10 @@ namespace WarDB.Models
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
         public DbSet<Item> Items { get; set; }
-        public DbSet<ScanMeta> ScanMetas { get; set; }
+        public DbSet<ScanMeta> ScanMeta { get; set; }
         public DbSet<Auction> Auctions { get; set; }
         public DbSet<DisenchantResult> DisenchantResults { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

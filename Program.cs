@@ -8,7 +8,8 @@ using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load environment variables
+string envPath = Path.Combine(AppContext.BaseDirectory, ".env");
+
 Env.Load();
 
 string connectionString = $"server={Env.GetString("DB_HOST")};" +
@@ -21,9 +22,10 @@ string connectionString = $"server={Env.GetString("DB_HOST")};" +
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySQL(connectionString));
 
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -39,5 +41,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
