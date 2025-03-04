@@ -12,14 +12,11 @@ namespace WarDB.ViewModels
         public int SellPrice { get; set; }
         public int StackCount { get; set; }
 
-        // Auction aggregated data
+        // Auction aggregated data (bid values trimmed)
         public int? TotalListings { get; set; }
         public int? TotalQuantity { get; set; }
         public int? MinBid { get; set; }
-        public int? MaxBid { get; set; }
-        public double? AvgBid { get; set; }
         public int? MinBuyout { get; set; }
-        public int? MaxBuyout { get; set; }
         public double? AvgBuyout { get; set; }
 
         // Price trend (most recent auction)
