@@ -7,6 +7,9 @@
 
 ### Install
 ```
+Git clone https://github.com/LienSimen/Disenchant-Classic
+```
+```
 dotnet restore
 ```
 
